@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20090920
-%define release 25
+%define version 20110314
+%define release 26
 
 Summary:	Realtime IRQ thread system tunning.
 Name:		%{name}
@@ -12,7 +12,7 @@ Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	/var/tmp/%{name}-%{version}-buildroot
 BuildArch:	noarch
-Requires:	/bin/sh,schedutils
+Requires:	/bin/sh,util-linux,sysvinit-tools
 Requires(post,preun):	/sbin/chkconfig
 
 %description
@@ -54,6 +54,8 @@ fi
 /etc/init.d/rtirq
 
 %changelog
+* Mon Mar 14 2011 Rui Nuno Capela <rncbc@users.sourceforge.net>
+- Version 20110314.
 * Sun Sep 20 2009 Rui Nuno Capela <rncbc@users.sourceforge.net>
 - Version 20090920.
 * Fri Sep 11 2009 Rui Nuno Capela <rncbc@users.sourceforge.net>
