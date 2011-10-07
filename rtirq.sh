@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2004-2009 rncbc aka Rui Nuno Capela.
+# Copyright (c) 2004-2011 rncbc aka Rui Nuno Capela.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License
@@ -119,16 +119,17 @@ function rtirq_exec_num ()
 	then
 		# Special for kernel-rt >= 2.6.31, where one can
 		# prioritize shared IRQs by device driver (NAME2)...
-		for NAME in ${NAME2}
-		do
-			PIDS=`ps -eo pid,comm | egrep -i "IRQ.${IRQ}.${NAME:0:8}" | awk '{print $1}'`
-			if [ -n "${PIDS}" ]; then break; fi
-		done
-		if [ -z "${PIDS}" ]
+		PIDS=`ps -eo pid,comm | egrep -i "IRQ.${IRQ}.${NAME2:0:8}" | awk '{print $1}'`
+		if [ -n "${PIDS}" ]
 		then
+			RTIRQ_TRAIL=":${IRQ}${RTIRQ_TRAIL}"
+		else
 			# Backward compability for older kernel-rt < 2.6.31...
 			PIDS=`ps -eo pid,comm | egrep -i "IRQ.${IRQ}" | awk '{print $1}'`
-			RTIRQ_TRAIL=":${IRQ}${RTIRQ_TRAIL}"
+			if [ -n "${PIDS}" ]
+			then
+				RTIRQ_TRAIL=":${IRQ}${RTIRQ_TRAIL}"
+			fi
 		fi
 		for PID in ${PIDS}
 		do
@@ -237,10 +238,15 @@ function rtirq_exec ()
 			PRI1=${PRI0}
 			grep irq /proc/asound/cards | tac | \
 			sed 's/\(.*\) at .* irq \(.*\)/\2 \1/' | \
-			while read IRQ NAME2
+			while read IRQ NAME1
 			do
-				rtirq_exec_num ${ACTION} "${NAME}" "${NAME2}" ${PRI1} ${IRQ}
-				PRI1=$((${PRI1} - 1))
+				grep "${NAME1}" /proc/asound/cards | \
+				sed 's/\(.*\)]: \(.*\) - \(.*\)/\2/' | \
+				while read NAME2
+				do
+					rtirq_exec_num ${ACTION} "${NAME}" "${NAME2}" ${PRI1} ${IRQ}
+					PRI1=$((${PRI1} - 1))
+				done
 			done
 			;;
 		usb)
