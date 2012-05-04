@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20120504
-%define release 28
+%define version 20120505
+%define release 29
 
 Summary:	Realtime IRQ thread system tunning.
 Name:		%{name}
