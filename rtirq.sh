@@ -125,6 +125,7 @@ function rtirq_exec_num ()
 		then
 			PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.snd.${NAME2:0:4}" | awk '{print $1}'`
 			if [ -z "${PIDS}" ]
+			then
 				PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.snd.*" | awk '{print $1}'`
 			fi
 		fi
