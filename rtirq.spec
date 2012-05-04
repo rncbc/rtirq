@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20111007
-%define release 27
+%define version 20120504
+%define release 28
 
 Summary:	Realtime IRQ thread system tunning.
 Name:		%{name}
@@ -54,6 +54,8 @@ fi
 /etc/init.d/rtirq
 
 %changelog
+* Fri May  5 2012 Rui Nuno Capela <rncbc@users.sourceforge.net>
+- Version 20120504.
 * Fri Oct  7 2011 Rui Nuno Capela <rncbc@users.sourceforge.net>
 - Version 20111007.
 * Mon Mar 14 2011 Rui Nuno Capela <rncbc@users.sourceforge.net>

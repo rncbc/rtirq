@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2004-2011 rncbc aka Rui Nuno Capela.
+# Copyright (c) 2004-2012 rncbc aka Rui Nuno Capela.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License
@@ -119,17 +119,25 @@ function rtirq_exec_num ()
 	then
 		# Special for kernel-rt >= 2.6.31, where one can
 		# prioritize shared IRQs by device driver (NAME2)...
-		PIDS=`ps -eo pid,comm | egrep -i "IRQ.${IRQ}.${NAME2:0:8}" | awk '{print $1}'`
+		PIDS=""
+		# First try for IRQs re. PCI sound devices ("snd")...
+		if [ "${NAME1}" == "snd" ]
+		then
+			PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.snd.${NAME2:0:4}" | awk '{print $1}'`
+		fi
+		if [ -z "${PIDS}" ]
+		then
+			PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.${NAME2:0:8}" | awk '{print $1}'`
+		fi
+		# Backward compability for older kernel-rt < 2.6.31...
+		if [ -z "${PIDS}" ]
+		then
+			PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}" | awk '{print $1}'`
+		fi
+		# Whether a IRQ tasklet has been found.
 		if [ -n "${PIDS}" ]
 		then
 			RTIRQ_TRAIL=":${IRQ}${RTIRQ_TRAIL}"
-		else
-			# Backward compability for older kernel-rt < 2.6.31...
-			PIDS=`ps -eo pid,comm | egrep -i "IRQ.${IRQ}" | awk '{print $1}'`
-			if [ -n "${PIDS}" ]
-			then
-				RTIRQ_TRAIL=":${IRQ}${RTIRQ_TRAIL}"
-			fi
 		fi
 		for PID in ${PIDS}
 		do
