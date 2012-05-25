@@ -172,6 +172,7 @@ function rtirq_exec_num ()
 				;;
 			esac
 			PRI2=$((${PRI2} - 1))
+			[ ${PRI2} -le ${PRI0_LOW} ] && PRI2=${PRI0_LOW}
 		done
 	fi
 }
@@ -190,6 +191,7 @@ function rtirq_exec_name ()
 	do
 		rtirq_exec_num ${ACTION} "${NAME1}" "${NAME2}" ${PRI1} ${IRQ}
 		PRI1=$((${PRI1} - 1))
+		[ ${PRI1} -le ${PRI0_LOW} ] && PRI1=${PRI0_LOW}
 	done
 }
 
@@ -240,6 +242,10 @@ function rtirq_exec ()
 	DECR=${RTIRQ_PRIO_DECR:-5}
 	[ $((${DECR})) -gt 10 ] && DECR=10
 	[ $((${DECR})) -lt  1 ] && DECR=1
+	# Check configured lower limit of priority.
+	PRI0_LOW=${RTIRQ_PRIO_LOW:-51}
+	[ $((${PRI0_LOW})) -gt $((${PRI0})) ] && PRI0_LOW=${PRI0}
+	[ $((${PRI0_LOW})) -lt  51 ] && PRI0_LOW=51
 	# (Re)set all softirq-timer/s to highest priority.
 	rtirq_exec_high ${ACTION}
 	# Process all configured service names...
@@ -248,7 +254,7 @@ function rtirq_exec ()
 		case ${NAME} in
 		snd)
 			PRI1=${PRI0}
-			grep irq /proc/asound/cards | tac | \
+			grep irq /proc/asound/cards  | \
 			sed 's/\(.*\) at .* irq \(.*\)/\2 \1/' | \
 			while read IRQ NAME1
 			do
@@ -258,6 +264,7 @@ function rtirq_exec ()
 				do
 					rtirq_exec_num ${ACTION} "${NAME}" "${NAME2}" ${PRI1} ${IRQ}
 					PRI1=$((${PRI1} - 1))
+					[ ${PRI1} -le ${PRI0_LOW} ] && PRI1=${PRI0_LOW}
 				done
 			done
 			;;
@@ -271,6 +278,7 @@ function rtirq_exec ()
 			;;
 		esac
 		[ ${PRI0} -gt ${DECR} ] && PRI0=$((${PRI0} - ${DECR}))
+		[ ${PRI0} -le ${PRI0_LOW} ] && PRI0=${PRI0_LOW}
 	done
 }
 
