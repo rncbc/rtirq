@@ -79,7 +79,7 @@ function rtirq_reset ()
 	PIDS=`ps -eo pid,comm | grep -i IRQ | awk '{print $1}'`
 	for PID in ${PIDS}
 	do
-		${RTIRQ_CHRT} --pid --other 0 ${PID}
+		${RTIRQ_CHRT} -p -o 0 ${PID}
 	done
 }
 
@@ -149,7 +149,7 @@ function rtirq_exec_num ()
 			case ${ACTION} in
 			*start)
 				PREPEND="${PREPEND} prio=${PRI2}"
-				if ${RTIRQ_CHRT} --pid --fifo ${PRI2} ${PID}
+				if ${RTIRQ_CHRT} -p -f ${PRI2} ${PID}
 				then
 					echo "${PREPEND}: OK."
 				else 
@@ -157,7 +157,7 @@ function rtirq_exec_num ()
 				fi
 				;;
 			stop)
-				if ${RTIRQ_CHRT} --pid --other 0 ${PID}
+				if ${RTIRQ_CHRT} -p -o 0 ${PID}
 				then
 					echo "${PREPEND}: OK."
 				else 
@@ -165,7 +165,7 @@ function rtirq_exec_num ()
 				fi
 				;;
 			status)
-				echo "${PREPEND}: " && ${RTIRQ_CHRT} --pid --verbose ${PID}
+				echo "${PREPEND}: " && ${RTIRQ_CHRT} -p -v ${PID}
 				;;
 			*)
 				echo "${PREPEND}: ERROR."
@@ -216,7 +216,7 @@ function rtirq_exec_high ()
 		PIDS=`ps -eo pid,comm | grep "${NAME}" | awk '{print $1}'`
 		for PID in ${PIDS}
 		do
-			if ${RTIRQ_CHRT} --pid --fifo ${PRI1} ${PID}
+			if ${RTIRQ_CHRT} -p -f ${PRI1} ${PID}
 			then
 				echo "${PREPEND} pid=${PID} prio=${PRI1}: OK."
 			else 
