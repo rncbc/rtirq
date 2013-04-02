@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20121105
-%define release 30
+%define version 20130402
+%define release 31
 
 Summary:	Realtime IRQ thread system tunning.
 Name:		%{name}
@@ -12,7 +12,7 @@ Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	/var/tmp/%{name}-%{version}-buildroot
 BuildArch:	noarch
-Requires:	/bin/sh,util-linux,sysvinit-tools
+Requires:	/bin/sh,util-linux,sysvinit-tools,systemd
 Requires(post,preun):	/sbin/chkconfig
 
 %description
@@ -28,8 +28,9 @@ kernel configuration.
 
 %install
 %{__rm} -rf %{buildroot}
-install -vD rtirq.sh   -m 0755 %{buildroot}/etc/init.d/rtirq
-install -vD rtirq.conf -m 0644 %{buildroot}/etc/sysconfig/rtirq
+install -vD rtirq.sh      -m 0755 %{buildroot}%{_sysconfdir}/init.d/rtirq
+install -vD rtirq.conf    -m 0644 %{buildroot}%{_sysconfdir}/sysconfig/rtirq
+install -vD rtirq.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq.service
 
 %post
 # Only run on install, not upgrade.
@@ -37,6 +38,7 @@ if [ "$1" = "1" ]; then
     chkconfig --add rtirq
     chkconfig rtirq on
 fi
+systemctl enable rtirq.service
 
 %preun
 # Only run if this is the last instance to be removed.
@@ -44,16 +46,21 @@ if [ "$1" = "0" ]; then
     chkconfig rtirq off
     chkconfig --del rtirq
 fi
+systemctl disable rtirq.service
 
 %clean
 %{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%config /etc/sysconfig/rtirq
-/etc/init.d/rtirq
+%{_sysconfdir}/init.d/rtirq
+%config(noreplace) %{_sysconfdir}/sysconfig/rtirq
+%{_prefix}/lib/systemd/system/rtirq.service
 
 %changelog
+* Tue Apr  2 2013 Rui Nuno Capela <rncbc@rncbc.org>
+- Include systemd unit (by Simon Lewis).
+- Version 20130402.
 * Mon Nov  5 2012 Rui Nuno Capela <rncbc@rncbc.org>
 - Version 20121105.
 * Sat May  5 2012 Rui Nuno Capela <rncbc@rncbc.org>
