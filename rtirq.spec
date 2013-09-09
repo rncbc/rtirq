@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20130402
-%define release 31
+%define version 20130909
+%define release 32
 
 Summary:	Realtime IRQ thread system tunning.
 Name:		%{name}
@@ -58,6 +58,9 @@ systemctl disable rtirq.service
 %{_prefix}/lib/systemd/system/rtirq.service
 
 %changelog
+* Mon Sep  9 2013 Rui Nuno Capela <rncbc@rncbc.org>
+- After targets added to systemd unit.
+- Version 20130909.
 * Tue Apr  2 2013 Rui Nuno Capela <rncbc@rncbc.org>
 - Include systemd unit (by Simon Lewis).
 - Version 20130402.

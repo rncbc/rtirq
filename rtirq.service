@@ -1,5 +1,6 @@
 [Unit]
 Description=Realtime IRQ thread system tuning
+After=multi-user.target sound.target
 
 [Service]
 Type=oneshot
