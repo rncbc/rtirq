@@ -58,9 +58,9 @@ systemctl disable rtirq.service
 %{_prefix}/lib/systemd/system/rtirq.service
 
 %changelog
-* Sat Apr 12 2014 Rui Nuno Capela <rncbc@rncbc.org>
-- Fixed shared IRQ on same service class (eg. snd, usb).
-- Version 20140412.
+* Sun Apr 13 2014 Rui Nuno Capela <rncbc@rncbc.org>
+- Fixed shared IRQ issues on same service class (eg. snd).
+- Version 20140413.
 * Mon Sep  9 2013 Rui Nuno Capela <rncbc@rncbc.org>
 - After targets added to systemd unit.
 - Version 20130909.

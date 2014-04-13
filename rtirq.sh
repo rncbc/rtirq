@@ -259,7 +259,7 @@ function rtirq_exec ()
 			while read IRQ NAME1
 			do
 				grep "${NAME1}" /proc/asound/cards | \
-				sed 's/\(.*\)]: \(.*\) - \(.*\)/\2/' | \
+				grep ']:' | sed 's/[.*]: \(.*\) - .*/\1/' | \
 				while read NAME2
 				do
 					rtirq_exec_num ${ACTION} "${NAME}" "${NAME2}" ${PRI1} ${IRQ}
