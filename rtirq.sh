@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2004-2014, rncbc aka Rui Nuno Capela.
+# Copyright (C) 2004-2015, rncbc aka Rui Nuno Capela.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License
@@ -115,7 +115,7 @@ function rtirq_exec_num ()
 		done
 	fi
 	# And now do the proper threading prioritization...
-	if [ -z "`echo ${RTIRQ_TRAIL} | grep :${NAME1}.${IRQ}:`" ]
+	if [ -z "`echo ${RTIRQ_TRAIL} | grep :${NAME2}.${IRQ}:`" ]
 	then
 		# Special for kernel-rt >= 2.6.31, where one can
 		# prioritize shared IRQs by device driver (NAME2)...
@@ -141,7 +141,7 @@ function rtirq_exec_num ()
 		# Whether a IRQ tasklet has been found.
 		if [ -n "${PIDS}" ]
 		then
-			RTIRQ_TRAIL=":${NAME1}.${IRQ}${RTIRQ_TRAIL}"
+			RTIRQ_TRAIL=":${NAME2}.${IRQ}${RTIRQ_TRAIL}"
 		fi
 		for PID in ${PIDS}
 		do
@@ -272,6 +272,7 @@ function rtirq_exec ()
 			rtirq_exec_name ${ACTION} "${NAME}" "ohci_hcd" ${PRI0}
 			rtirq_exec_name ${ACTION} "${NAME}" "uhci_hcd" ${PRI0}
 			rtirq_exec_name ${ACTION} "${NAME}" "ehci_hcd" ${PRI0}
+			rtirq_exec_name ${ACTION} "${NAME}" "xhci_hcd" ${PRI0}
 			;;
 		*)
 			rtirq_exec_name ${ACTION} "${NAME}" "${NAME}" ${PRI0}

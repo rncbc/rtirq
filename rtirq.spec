@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20140413
-%define release 34
+%define version 20150216
+%define release 35
 
 Summary:	Realtime IRQ thread system tunning.
 Name:		%{name}
@@ -58,6 +58,10 @@ systemctl disable rtirq.service
 %{_prefix}/lib/systemd/system/rtirq.service
 
 %changelog
+* Mon Feb 16 2015 Rui Nuno Capela <rncbc@rncbc.org>
+- Added "xhci_hcd" (USB 3.x) to "usb" keyword roster.
+- Removed (old) "rtc" from default config list.
+- Version 20150216.
 * Sun Apr 13 2014 Rui Nuno Capela <rncbc@rncbc.org>
 - Fixed shared IRQ issues on same service class (eg. snd).
 - Version 20140413.
