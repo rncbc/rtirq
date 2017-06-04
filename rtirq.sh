@@ -40,6 +40,7 @@
 ### END INIT INFO
 #
 
+     . /lib/lsb/init-functions
 
 # Won't work without those binaries.
 for DIR in /sbin /usr/sbin /bin /usr/bin /usr/local/bin; do
