@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20150216
-%define release 35
+%define version 20180208
+%define release 36
 
 Summary:	Realtime IRQ thread system tunning.
 Name:		%{name}
@@ -58,6 +58,9 @@ systemctl disable rtirq.service
 %{_prefix}/lib/systemd/system/rtirq.service
 
 %changelog
+* Thu Feb  8 2018 Rui Nuno Capela <rncbc@rncbc.org>
+- Always reset/stop to scheduling policy=SCHED_FIFO and priority=50.
+- Version 20180208.
 * Mon Feb 16 2015 Rui Nuno Capela <rncbc@rncbc.org>
 - Added "xhci_hcd" (USB 3.x) to "usb" keyword roster.
 - Removed (old) "rtc" from default config list.

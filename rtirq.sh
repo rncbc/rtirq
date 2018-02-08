@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2004-2015, rncbc aka Rui Nuno Capela.
+# Copyright (C) 2004-2018, rncbc aka Rui Nuno Capela.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License
@@ -75,11 +75,10 @@ function rtirq_reset ()
 {
 	# Reset all softirq-timer/s from highest priority.
 	rtirq_exec_high reset
-	# PIDS=`ps -eo pid,class | egrep '(FF|RR)' | awk '{print $1}'`
-	PIDS=`ps -eo pid,comm | grep -i IRQ | awk '{print $1}'`
+	PIDS=`ps -eo pid,comm | egrep -i "irq.*/" | awk '{print $1}'`
 	for PID in ${PIDS}
 	do
-		${RTIRQ_CHRT} -p -o 0 ${PID}
+		${RTIRQ_CHRT} -p -f 50 ${PID}
 	done
 }
 
@@ -157,7 +156,7 @@ function rtirq_exec_num ()
 				fi
 				;;
 			stop)
-				if ${RTIRQ_CHRT} -p -o 0 ${PID}
+				if ${RTIRQ_CHRT} -p -f 50 ${PID}
 				then
 					echo "${PREPEND}: OK."
 				else 
@@ -206,7 +205,7 @@ function rtirq_exec_high ()
 		PRI1=99
 		;;
 	*)
-		PRI1=1
+		PRI1=50
 		;;
 	esac
 	# Process all configured process names...
@@ -299,9 +298,8 @@ stop)
 	if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
 	then
 		rtirq_reset
-	#else
-	#  rtirq_exec stop
 	fi
+	rtirq_exec stop
 	;;
 reset)
 	if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
