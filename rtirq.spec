@@ -1,5 +1,5 @@
 %define name    rtirq
-%define version 20180208
+%define version 20180209
 %define release 36
 
 Summary:	Realtime IRQ thread system tunning.
@@ -58,9 +58,9 @@ systemctl disable rtirq.service
 %{_prefix}/lib/systemd/system/rtirq.service
 
 %changelog
-* Thu Feb  8 2018 Rui Nuno Capela <rncbc@rncbc.org>
+* Fri Feb  9 2018 Rui Nuno Capela <rncbc@rncbc.org>
 - Always reset/stop to scheduling policy=SCHED_FIFO and priority=50.
-- Version 20180208.
+- Version 20180209.
 * Mon Feb 16 2015 Rui Nuno Capela <rncbc@rncbc.org>
 - Added "xhci_hcd" (USB 3.x) to "usb" keyword roster.
 - Removed (old) "rtc" from default config list.
@@ -125,22 +125,22 @@ systemctl disable rtirq.service
 - Fixed to 20050816 version.
 * Wed Jun 20 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Up to 20050620 tinyfix version.
-* Wed Jun 8 2005 Rui Nuno Capela <rncbc@rncbc.org>
+* Wed Jun  8 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Fixes on non threading IRQ service (thanks to Luis Garrido).
 - Bumped to 20050608 version.
-* Wed Jun 1 2005 Rui Nuno Capela <rncbc@rncbc.org>
+* Wed Jun  1 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Missing info on status list was fixed for IRQs>99. 
 - Moved to 20050601 version.
 * Wed Apr 15 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Non threading IRQ service list configuration option.
 - Moved to 20050415 version.
-* Wed Apr 8 2005 Rui Nuno Capela <rncbc@rncbc.org>
+* Wed Apr  8 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - IRQ handler refrence name included on status listing.
 - Prevent lower priority overriding due to shared IRQs.
 - Fixed to 20050408 version.
 * Thu Nov 12 2004 Rui Nuno Capela <rncbc@rncbc.org>
 - Bumped to 20041112 version.
-* Thu Nov 8 2004 Rui Nuno Capela <rncbc@rncbc.org>
+* Thu Nov  8 2004 Rui Nuno Capela <rncbc@rncbc.org>
 - Update for the new 20041108 version.
-* Thu Nov 4 2004 Rui Nuno Capela <rncbc@rncbc.org>
+* Thu Nov  4 2004 Rui Nuno Capela <rncbc@rncbc.org>
 - Created initial rtirq.spec

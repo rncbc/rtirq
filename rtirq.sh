@@ -75,7 +75,7 @@ function rtirq_reset ()
 {
 	# Reset all softirq-timer/s from highest priority.
 	rtirq_exec_high reset
-	PIDS=`ps -eo pid,comm | egrep -i "irq.*/" | awk '{print $1}'`
+	PIDS=`ps -eo pid,comm | egrep -i "irq.[0-9]+" | awk '{print $1}'`
 	for PID in ${PIDS}
 	do
 		${RTIRQ_CHRT} -p -f 50 ${PID}
@@ -302,12 +302,7 @@ stop)
 	rtirq_exec stop
 	;;
 reset)
-	if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
-	then
-		rtirq_reset
-	else
-		rtirq_exec stop
-	fi
+	rtirq_reset
 	;;
 restart|force-reload)
 	$0 stop || true
