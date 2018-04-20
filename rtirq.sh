@@ -272,6 +272,7 @@ function rtirq_exec ()
 			rtirq_exec_name ${ACTION} "${NAME}" "uhci_hcd" ${PRI0}
 			rtirq_exec_name ${ACTION} "${NAME}" "ehci_hcd" ${PRI0}
 			rtirq_exec_name ${ACTION} "${NAME}" "xhci_hcd" ${PRI0}
+			rtirq_exec_name ${ACTION} "${NAME}" "xhci-hcd" ${PRI0}
 			;;
 		*)
 			rtirq_exec_name ${ACTION} "${NAME}" "${NAME}" ${PRI0}
