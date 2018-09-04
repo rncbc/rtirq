@@ -254,7 +254,7 @@ function rtirq_exec ()
 		snd)
 			PRI1=${PRI0}
 			grep irq /proc/asound/cards | \
-			sed 's/\(.*\) at .* irq \(.*\)/\2 \1/' | \
+			sed 's/\(.*\) at.* irq \(.*\)/\2 \1/;s/with .*//' | \
 			while read IRQ NAME1
 			do
 				grep "${NAME1}" /proc/asound/cards | \
@@ -268,11 +268,10 @@ function rtirq_exec ()
 			done
 			;;
 		usb)
-			rtirq_exec_name ${ACTION} "${NAME}" "ohci_hcd" ${PRI0}
-			rtirq_exec_name ${ACTION} "${NAME}" "uhci_hcd" ${PRI0}
-			rtirq_exec_name ${ACTION} "${NAME}" "ehci_hcd" ${PRI0}
-			rtirq_exec_name ${ACTION} "${NAME}" "xhci_hcd" ${PRI0}
-			rtirq_exec_name ${ACTION} "${NAME}" "xhci-hcd" ${PRI0}
+			rtirq_exec_name ${ACTION} "${NAME}" "ohci.hcd" ${PRI0}
+			rtirq_exec_name ${ACTION} "${NAME}" "uhci.hcd" ${PRI0}
+			rtirq_exec_name ${ACTION} "${NAME}" "ehci.hcd" ${PRI0}
+			rtirq_exec_name ${ACTION} "${NAME}" "xhci.hcd" ${PRI0}
 			;;
 		*)
 			rtirq_exec_name ${ACTION} "${NAME}" "${NAME}" ${PRI0}
