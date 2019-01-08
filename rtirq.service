@@ -1,6 +1,6 @@
 [Unit]
 Description=Realtime IRQ thread system tuning
-After=multi-user.target sound.target
+After=multi-user.target sound.target suspend.target
 
 [Service]
 Type=oneshot
@@ -9,4 +9,4 @@ ExecStop=/etc/init.d/rtirq stop
 RemainAfterExit=true
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target suspend.target
