@@ -31,6 +31,7 @@ kernel configuration.
 install -vD rtirq.sh      -m 0755 %{buildroot}%{_sysconfdir}/init.d/rtirq
 install -vD rtirq.conf    -m 0644 %{buildroot}%{_sysconfdir}/sysconfig/rtirq
 install -vD rtirq.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq.service
+install -vD rtirq-resume.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq.service
 
 %post
 # Only run on install, not upgrade.
@@ -39,6 +40,7 @@ if [ "$1" = "1" ]; then
     chkconfig rtirq on
 fi
 systemctl enable rtirq.service
+systemctl enable rtirq-resume.service
 
 %preun
 # Only run if this is the last instance to be removed.
@@ -46,6 +48,7 @@ if [ "$1" = "0" ]; then
     chkconfig rtirq off
     chkconfig --del rtirq
 fi
+systemctl disable rtirq-resume.service
 systemctl disable rtirq.service
 
 %clean
@@ -56,6 +59,7 @@ systemctl disable rtirq.service
 %{_sysconfdir}/init.d/rtirq
 %config(noreplace) %{_sysconfdir}/sysconfig/rtirq
 %{_prefix}/lib/systemd/system/rtirq.service
+%{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
 * Fri Feb  9 2018 Rui Nuno Capela <rncbc@rncbc.org>
