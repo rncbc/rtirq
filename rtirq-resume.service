@@ -1,0 +1,10 @@
+[Unit]
+Description=Realtime IRQ thread system tuning (restart after suspend)
+After=multi-user.target suspend.target
+
+[Service]
+Type=simple
+ExecStart=/etc/init.d/rtirq start
+
+[Install]
+WantedBy=multi-user.target suspend.target
