@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20180209
-%define release 36
+%define version 20190129
+%define release 37
 
 Summary:	Realtime IRQ thread system tunning.
 Name:		%{name}
@@ -62,6 +62,10 @@ systemctl disable rtirq.service
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Tue Jan 29 2019 Rui Nuno Capela <rncbc@rncbc.org>
+- Restart rtirq service after resume from suspend (by Térence Clastres).
+- Fix for some Intel internal and USB stuff (by Samuel Pelegrinello).
+- Version 20190129.
 * Fri Feb  9 2018 Rui Nuno Capela <rncbc@rncbc.org>
 - Always reset/stop to scheduling policy=SCHED_FIFO and priority=50.
 - Version 20180209.
