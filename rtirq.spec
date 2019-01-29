@@ -31,7 +31,7 @@ kernel configuration.
 install -vD rtirq.sh      -m 0755 %{buildroot}%{_sysconfdir}/init.d/rtirq
 install -vD rtirq.conf    -m 0644 %{buildroot}%{_sysconfdir}/sysconfig/rtirq
 install -vD rtirq.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq.service
-install -vD rtirq-resume.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq.service
+install -vD rtirq-resume.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %post
 # Only run on install, not upgrade.
@@ -125,13 +125,13 @@ systemctl disable rtirq.service
 - Bumped to 20060819 version.
 * Thu Aug 17 2006 Rui Nuno Capela <rncbc@rncbc.org>
 - Bumped to 20060817 version.
-* Wed Feb 18 2006 Rui Nuno Capela <rncbc@rncbc.org>
+* Sat Feb 18 2006 Rui Nuno Capela <rncbc@rncbc.org>
 - Set all softirq-timers to highest priority; 20060218 version.
 * Wed Sep 14 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Touched to 20050914 version.
 * Tue Aug 16 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Fixed to 20050816 version.
-* Wed Jun 20 2005 Rui Nuno Capela <rncbc@rncbc.org>
+* Mon Jun 20 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Up to 20050620 tinyfix version.
 * Wed Jun  8 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Fixes on non threading IRQ service (thanks to Luis Garrido).
@@ -139,16 +139,16 @@ systemctl disable rtirq.service
 * Wed Jun  1 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Missing info on status list was fixed for IRQs>99. 
 - Moved to 20050601 version.
-* Wed Apr 15 2005 Rui Nuno Capela <rncbc@rncbc.org>
+* Fri Apr 15 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - Non threading IRQ service list configuration option.
 - Moved to 20050415 version.
-* Wed Apr  8 2005 Rui Nuno Capela <rncbc@rncbc.org>
+* Fri Apr  8 2005 Rui Nuno Capela <rncbc@rncbc.org>
 - IRQ handler refrence name included on status listing.
 - Prevent lower priority overriding due to shared IRQs.
 - Fixed to 20050408 version.
-* Thu Nov 12 2004 Rui Nuno Capela <rncbc@rncbc.org>
+* Fri Nov 12 2004 Rui Nuno Capela <rncbc@rncbc.org>
 - Bumped to 20041112 version.
-* Thu Nov  8 2004 Rui Nuno Capela <rncbc@rncbc.org>
+* Mon Nov  8 2004 Rui Nuno Capela <rncbc@rncbc.org>
 - Update for the new 20041108 version.
 * Thu Nov  4 2004 Rui Nuno Capela <rncbc@rncbc.org>
 - Created initial rtirq.spec
