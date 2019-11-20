@@ -26,6 +26,9 @@ BuildRequires:	sysvinit-tools,insserv-compat
 
 %if 0%{?suse_version}
 Requires(post,postun): %insserv_prereq
+%if ! %{defined _fillupdir}
+%define _fillupdir /var/adm/fillup-templates
+%endif
 %endif
 
 %description
@@ -76,13 +79,6 @@ fi
 %endif
 systemctl disable rtirq-resume.service
 systemctl disable rtirq.service
-
-%postun
-%if 0%{?suse_version}
-%__rm -f /etc/sysconfig/rtirq
-%__rm -f /etc/rtirq.conf
-%insserv_cleanup
-%endif
 
 %clean
 %__rm -rf %{buildroot}
