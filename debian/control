@@ -1,0 +1,15 @@
+Source: rtirq
+Section: misc
+Priority: optional
+Maintainer: Rui Nuno Capela <rncbc@rncbc.org>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.7.8
+Homepage: https://www.rncbc.org/archive/#rtirq
+
+Package: rtirq-init
+Architecture: all
+Depends: ${misc:Depends}
+Description: Realtime IRQ thread system tunning
+  Startup scripts for tunning the realtime scheduling policy and priority
+  of relevant IRQ service threads, featured for a realtime-preempt enabled
+  kernel configuration.

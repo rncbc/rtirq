@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2004-2018, rncbc aka Rui Nuno Capela.
+# Copyright (C) 2004-2019, rncbc aka Rui Nuno Capela.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License
@@ -28,12 +28,12 @@
 #
 ### BEGIN INIT INFO
 # Provides:          rtirq
-# Required-Start:    $syslog $local_fs
+# Required-Start:    $syslog $local_fs $remote_fs
 # Should-Start: $time alsa alsasound hotplug
-# Required-Stop:     $syslog $local_fs
+# Required-Stop:     $syslog $local_fs $remote_fs
 # Should-Stop: $time alsa alsasound hotplug
-# Default-Start:     3 5
-# Default-Stop:      0 1 2 6
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
 # Short-Description: Realtime IRQ thread tunning.
 # Description:       Change the realtime scheduling policy
 #	and priority of relevant system driver IRQ handlers.

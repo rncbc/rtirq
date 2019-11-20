@@ -1,12 +1,12 @@
 %define name    rtirq
-%define version 20190129
-%define release 37
+%define version 20191120
+%define release 38
 
-Summary:	Realtime IRQ thread system tunning.
+Summary:	Realtime IRQ thread system tunning
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
-License:	GPL
+License:	GPLv2+
 Packager:	rncbc
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
@@ -62,6 +62,8 @@ systemctl disable rtirq.service
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Wed Nov 20 2019 Rui Nuno Capela <rncbc@rncbc.org>
+- Created debian packaging files.
 * Tue Jan 29 2019 Rui Nuno Capela <rncbc@rncbc.org>
 - Restart rtirq service after resume from suspend (by Térence Clastres).
 - Fix for some Intel internal and USB stuff (by Samuel Pelegrinello).
