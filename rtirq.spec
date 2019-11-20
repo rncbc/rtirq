@@ -2,6 +2,10 @@
 %define version 20191120
 %define release 38
 
+%if %{defined fedora}
+%define debug_package %{nil}
+%endif
+
 Summary:	Realtime IRQ thread system tunning
 Name:		%{name}
 Version:	%{version}
@@ -12,8 +16,17 @@ Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	/var/tmp/%{name}-%{version}-buildroot
 BuildArch:	noarch
-Requires:	/bin/sh,util-linux,sysvinit-tools,systemd
-Requires(post,preun):	/sbin/chkconfig
+
+BuildRequires:	util-linux,systemd
+%if %{defined fedora}
+BuildRequires:	chkconfig
+%else
+BuildRequires:	sysvinit-tools,insserv-compat
+%endif
+
+%if 0%{?suse_version}
+Requires(post,postun): %insserv_prereq
+%endif
 
 %description
 Startup scripts for tunning the realtime scheduling policy and priority
@@ -27,13 +40,22 @@ kernel configuration.
 %build
 
 %install
-%{__rm} -rf %{buildroot}
+%__rm -rf %{buildroot}
 install -vD rtirq.sh      -m 0755 %{buildroot}%{_sysconfdir}/init.d/rtirq
+%if 0%{?suse_version}
+install -vD rtirq.conf    -m 0644 %{buildroot}%{_fillupdir}/sysconfig.rtirq
+%else
 install -vD rtirq.conf    -m 0644 %{buildroot}%{_sysconfdir}/sysconfig/rtirq
+%endif
 install -vD rtirq.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq.service
 install -vD rtirq-resume.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq-resume.service
+install -d %{buildroot}%{_sbindir}
+ln -svf %{_sysconfdir}/init.d/rtirq %{buildroot}%{_sbindir}/rtirq
 
 %post
+%if 0%{?suse_version}
+%{fillup_and_insserv -y rtirq}
+%endif
 # Only run on install, not upgrade.
 if [ "$1" = "1" ]; then
     chkconfig --add rtirq
@@ -48,16 +70,35 @@ if [ "$1" = "0" ]; then
     chkconfig rtirq off
     chkconfig --del rtirq
 fi
+%if 0%{?suse_version}
+%{stop_on_removal rtirq}
+%insserv_cleanup
+%endif
 systemctl disable rtirq-resume.service
 systemctl disable rtirq.service
 
+%postun
+%if 0%{?suse_version}
+%__rm -f /etc/sysconfig/rtirq
+%__rm -f /etc/rtirq.conf
+%insserv_cleanup
+%endif
+
 %clean
-%{__rm} -rf %{buildroot}
+%__rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
+%dir %{_sysconfdir}/init.d
 %{_sysconfdir}/init.d/rtirq
+%{_sbindir}/rtirq
+%if 0%{?suse_version}
+%config(noreplace) %{_fillupdir}/sysconfig.rtirq
+%else
 %config(noreplace) %{_sysconfdir}/sysconfig/rtirq
+%endif
+%dir %{_prefix}/lib/systemd
+%dir %{_prefix}/lib/systemd/system
 %{_prefix}/lib/systemd/system/rtirq.service
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
