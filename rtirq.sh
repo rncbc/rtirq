@@ -18,13 +18,13 @@
 #
 # /etc/init.d/rtirq
 #
-# Startup script for realtime-preempt enabled kernels.
+# Startup script for PREEMPT_RT / threadirqs enabled kernels.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 or later.
 #
 # chkconfig: 35 81 19
-# description: Realtime IRQ thread tunning.
+# description: Realtime IRQ thread tunning
 #
 ### BEGIN INIT INFO
 # Provides:          rtirq
@@ -34,9 +34,9 @@
 # Should-Stop: $time alsa alsasound hotplug
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Realtime IRQ thread tunning.
+# Short-Description: Realtime IRQ thread tunning
 # Description:       Change the realtime scheduling policy
-#	and priority of relevant system driver IRQ handlers.
+#   and priority of relevant system driver IRQ handlers.
 ### END INIT INFO
 #
 

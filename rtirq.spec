@@ -1,5 +1,5 @@
 %define name    rtirq
-%define version 20191120
+%define version 20191121
 %define release 38
 
 %if %{defined fedora}
@@ -33,8 +33,8 @@ Requires(post,preun): %insserv_prereq
 
 %description
 Startup scripts for tunning the realtime scheduling policy and priority
-of relevant IRQ service threads, featured for a realtime-preempt enabled
-kernel configuration. 
+of relevant IRQ service threads, featured for a PREEMPT_RT / threadirqs
+enabled kernel configuration.
 
 %prep
 
@@ -99,7 +99,7 @@ systemctl disable rtirq.service
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
-* Wed Nov 20 2019 Rui Nuno Capela <rncbc@rncbc.org>
+* Thu Nov 21 2019 Rui Nuno Capela <rncbc@rncbc.org>
 - Created debian packaging files.
 * Tue Jan 29 2019 Rui Nuno Capela <rncbc@rncbc.org>
 - Restart rtirq service after resume from suspend (by Térence Clastres).
