@@ -21,11 +21,11 @@ BuildRequires:	util-linux,systemd
 %if %{defined fedora}
 BuildRequires:	chkconfig
 %else
-BuildRequires:	sysvinit-tools,insserv-compat
+BuildRequires:	systemd-sysvinit,sysvinit-tools,insserv-compat
 %endif
 
 %if 0%{?suse_version}
-Requires(post,postun): %insserv_prereq
+Requires(post,preun): %insserv_prereq
 %if ! %{defined _fillupdir}
 %define _fillupdir /var/adm/fillup-templates
 %endif
