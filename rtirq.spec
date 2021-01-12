@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20191121
-%define release 38
+%define version 20210112
+%define release 39
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -18,14 +18,8 @@ BuildRoot:	/var/tmp/%{name}-%{version}-buildroot
 BuildArch:	noarch
 
 BuildRequires:	util-linux,systemd
-%if %{defined fedora}
-BuildRequires:	chkconfig
-%else
-BuildRequires:	systemd-sysvinit,sysvinit-tools,insserv-compat
-%endif
 
 %if 0%{?suse_version}
-Requires(post,preun): %insserv_prereq
 %if ! %{defined _fillupdir}
 %define _fillupdir /var/adm/fillup-templates
 %endif
@@ -44,61 +38,41 @@ enabled kernel configuration.
 
 %install
 %__rm -rf %{buildroot}
-install -vD rtirq.sh      -m 0755 %{buildroot}%{_sysconfdir}/init.d/rtirq
-%if 0%{?suse_version}
-install -vD rtirq.conf    -m 0644 %{buildroot}%{_fillupdir}/sysconfig.rtirq
-%else
-install -vD rtirq.conf    -m 0644 %{buildroot}%{_sysconfdir}/sysconfig/rtirq
-%endif
+install -d %{buildroot}%{_sbindir}
+install -vD rtirq.sh      -m 0755 %{buildroot}%{_sbindir}/rtirq
+install -vD rtirq.conf    -m 0644 %{buildroot}%{_sysconfdir}/rtirq.conf
 install -vD rtirq.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq.service
 install -vD rtirq-resume.service -m 0644 %{buildroot}%{_prefix}/lib/systemd/system/rtirq-resume.service
-install -d %{buildroot}%{_sbindir}
-ln -svf %{_sysconfdir}/init.d/rtirq %{buildroot}%{_sbindir}/rtirq
 
 %post
-%if 0%{?suse_version}
-%{fillup_and_insserv -y rtirq}
-%endif
 # Only run on install, not upgrade.
 if [ "$1" = "1" ]; then
-    chkconfig --add rtirq
-    chkconfig rtirq on
+    systemctl enable rtirq.service
+    systemctl enable rtirq-resume.service
 fi
-systemctl enable rtirq.service
-systemctl enable rtirq-resume.service
 
 %preun
 # Only run if this is the last instance to be removed.
 if [ "$1" = "0" ]; then
-    chkconfig rtirq off
-    chkconfig --del rtirq
+    systemctl disable rtirq-resume.service
+    systemctl disable rtirq.service
 fi
-%if 0%{?suse_version}
-%{stop_on_removal rtirq}
-%insserv_cleanup
-%endif
-systemctl disable rtirq-resume.service
-systemctl disable rtirq.service
 
 %clean
 %__rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%dir %{_sysconfdir}/init.d
-%{_sysconfdir}/init.d/rtirq
 %{_sbindir}/rtirq
-%if 0%{?suse_version}
-%config(noreplace) %{_fillupdir}/sysconfig.rtirq
-%else
-%config(noreplace) %{_sysconfdir}/sysconfig/rtirq
-%endif
+%config(noreplace) %{_sysconfdir}/rtirq.conf
 %dir %{_prefix}/lib/systemd
 %dir %{_prefix}/lib/systemd/system
 %{_prefix}/lib/systemd/system/rtirq.service
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Tue Jan 12 2021 Rui Nuno Capela <rncbc@rncbc.org>
+- Getting rid of all the deprecated sysvinit stuff.
 * Thu Nov 21 2019 Rui Nuno Capela <rncbc@rncbc.org>
 - Created debian packaging files.
 * Tue Jan 29 2019 Rui Nuno Capela <rncbc@rncbc.org>

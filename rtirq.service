@@ -4,8 +4,8 @@ After=multi-user.target sound.target
 
 [Service]
 Type=oneshot
-ExecStart=/etc/init.d/rtirq start
-ExecStop=/etc/init.d/rtirq stop
+ExecStart=/usr/sbin/rtirq start
+ExecStop=/usr/sbin/rtirq stop
 RemainAfterExit=true
 
 [Install]

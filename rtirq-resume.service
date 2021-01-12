@@ -4,7 +4,7 @@ After=multi-user.target suspend.target
 
 [Service]
 Type=simple
-ExecStart=/etc/init.d/rtirq start
+ExecStart=/usr/sbin/rtirq start
 
 [Install]
 WantedBy=multi-user.target suspend.target

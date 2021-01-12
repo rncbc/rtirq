@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2004-2019, rncbc aka Rui Nuno Capela.
+# Copyright (C) 2004-2021, rncbc aka Rui Nuno Capela.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License
@@ -16,28 +16,12 @@
 #   with this program; if not, write to the Free Software Foundation, Inc.,
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# /etc/init.d/rtirq
+# /usr/sbin/rtirq
 #
 # Startup script for PREEMPT_RT / threadirqs enabled kernels.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 or later.
-#
-# chkconfig: 35 81 19
-# description: Realtime IRQ thread tunning
-#
-### BEGIN INIT INFO
-# Provides:          rtirq
-# Required-Start:    $syslog $local_fs $remote_fs
-# Should-Start: $time alsa alsasound hotplug
-# Required-Stop:     $syslog $local_fs $remote_fs
-# Should-Stop: $time alsa alsasound hotplug
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Realtime IRQ thread tunning
-# Description:       Change the realtime scheduling policy
-#   and priority of relevant system driver IRQ handlers.
-### END INIT INFO
 #
 
 
@@ -53,9 +37,9 @@ done
 }
 
 # Check for existence of needed config file and read it.
-RTIRQ_CONFIG=/etc/sysconfig/rtirq
+RTIRQ_CONFIG=/etc/rtirq.conf
 [ -r ${RTIRQ_CONFIG} ] || RTIRQ_CONFIG=/etc/default/rtirq
-[ -r ${RTIRQ_CONFIG} ] || RTIRQ_CONFIG=/etc/rtirq.conf
+[ -r ${RTIRQ_CONFIG} ] || RTIRQ_CONFIG=/etc/sysconfig/rtirq
 [ -r ${RTIRQ_CONFIG} ] || {
 	echo "`basename $0`: ${RTIRQ_CONFIG}: not found."
 	[ "${RTIRQ_ACTION}" = "stop" ] && exit 0 || exit 6

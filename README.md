@@ -5,7 +5,7 @@ Your package manager may make this package availabe as `rtirq-init`.
 
 This script allows to make use of the threaded IRQs as used by real-time kernels or kernels >= 2.6.39 with the threadirqs kernel option enabled.
 
-`/etc/init.d/rtirq status` gives you an overview about the current IRQ status.
+`/usr/sbin/rtirq status` gives you an overview about the current IRQ status.
 
 To load the kernel with the threadirqs option, edit `/etc/default/grub` and change the line
 ```
@@ -20,8 +20,9 @@ Then run `update-grub` with super-user privileges.
 You can adapt the priorities given to specific interrupts to the needs of your setup depending if you are using a soudcard on the USB or firewire bus for instance. To do sp you can edit the rtirq config file, which typically will be installed in either of the directories:
 
 ```
-/etc/sysconfig/rtirq
+/etc/rtirq.conf
 /etc/default/rtirq
+/etc/sysconfig/rtirq
 ```
 
 The `RTIRQ_NAME_LIST` variable contains a list of space separated service names of which the first entry gets the highest priority. The term service seems to refer to module names and sound device designations (so the output of lsmod and aplay -l respectively) and doesn't have to correspond to the full output, part of the output may suffice as the rtirq script does the matching itself.
