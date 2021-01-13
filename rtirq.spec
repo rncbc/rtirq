@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20210112
-%define release 39
+%define version 20210113
+%define release 40
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -18,12 +18,6 @@ BuildRoot:	/var/tmp/%{name}-%{version}-buildroot
 BuildArch:	noarch
 
 BuildRequires:	util-linux,systemd
-
-%if 0%{?suse_version}
-%if ! %{defined _fillupdir}
-%define _fillupdir /var/adm/fillup-templates
-%endif
-%endif
 
 %description
 Startup scripts for tunning the realtime scheduling policy and priority

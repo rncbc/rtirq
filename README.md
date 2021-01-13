@@ -22,7 +22,6 @@ You can adapt the priorities given to specific interrupts to the needs of your s
 ```
 /etc/rtirq.conf
 /etc/default/rtirq
-/etc/sysconfig/rtirq
 ```
 
 The `RTIRQ_NAME_LIST` variable contains a list of space separated service names of which the first entry gets the highest priority. The term service seems to refer to module names and sound device designations (so the output of lsmod and aplay -l respectively) and doesn't have to correspond to the full output, part of the output may suffice as the rtirq script does the matching itself.

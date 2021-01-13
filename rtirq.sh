@@ -39,7 +39,6 @@ done
 # Check for existence of needed config file and read it.
 RTIRQ_CONFIG=/etc/rtirq.conf
 [ -r ${RTIRQ_CONFIG} ] || RTIRQ_CONFIG=/etc/default/rtirq
-[ -r ${RTIRQ_CONFIG} ] || RTIRQ_CONFIG=/etc/sysconfig/rtirq
 [ -r ${RTIRQ_CONFIG} ] || {
 	echo "`basename $0`: ${RTIRQ_CONFIG}: not found."
 	[ "${RTIRQ_ACTION}" = "stop" ] && exit 0 || exit 6
