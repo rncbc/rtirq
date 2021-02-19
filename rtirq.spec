@@ -10,7 +10,7 @@ Summary:	Realtime IRQ thread system tunning
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
-License:	GPLv2+
+License:	GPL-2.0+
 Packager:	rncbc
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
