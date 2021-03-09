@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20210113
-%define release 40
+%define version 20210309
+%define release 41
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -67,6 +67,8 @@ fi
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Tue Mar  9 2021 Rui Nuno Capela <rncbc@rncbc.org>
+- Rewrite attempt to save/restore state on start/stop resp.
 * Wed Jan 13 2021 Rui Nuno Capela <rncbc@rncbc.org>
 - Getting rid of all the deprecated sysvinit stuff.
 - Version 20210113

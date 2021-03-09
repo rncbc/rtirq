@@ -47,40 +47,64 @@ RTIRQ_CONFIG=/etc/rtirq.conf
 # Read configuration.
 source ${RTIRQ_CONFIG}
 
+
+# Save/restore state file path (default).
+RTIRQ_STATE=${RTIRQ_STATE:-/var/run/rtirq.state}
+
 # Colon delimited trail list of already assigned IRQ numbers,
 # preventind lower priority override due to shared IRQs.
 RTIRQ_TRAIL=":"
 
-# 
-# Reset policy of all IRQ threads out there. 
-#
-function rtirq_reset ()
-{
-	# Reset all softirq-timer/s from highest priority.
-	rtirq_exec_high reset
-	PIDS=`ps -eo pid,comm | egrep -i "irq.[0-9]+" | awk '{print $1}'`
-	for PID in ${PIDS}
-	do
-		${RTIRQ_CHRT} -p -f 50 ${PID}
-	done
-}
 
 #
-# IRQ thread handler policy prioritizer, by IRQ number.
+# Get process-ids by thread handler names and IRQ number.
 #
-function rtirq_exec_num ()
+function rtirq_get_pids ()
+{
+	NAME1=$1
+	NAME2=$2
+	IRQ=$3
+
+	# Special for kernel-rt >= 2.6.31, where one can
+	# prioritize shared IRQs by device driver (NAME2)...
+	PIDS=""
+	# First try for IRQs re. PCI sound devices ("snd")...
+	if [ "${NAME1}" == "snd" ]
+	then
+		PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.snd.${NAME2:0:4}" | awk '{print $1}'`
+		if [ -z "${PIDS}" ]
+		then
+			PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.snd.*" | awk '{print $1}'`
+		fi
+	fi
+	if [ -z "${PIDS}" ]
+	then
+		PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.${NAME2:0:8}" | awk '{print $1}'`
+	fi
+	# Backward compability for older kernel-rt < 2.6.31...
+	if [ -z "${PIDS}" ]
+	then
+		PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}" | awk '{print $1}'`
+	fi
+	echo ${PIDS}
+}
+
+
+#
+# Check for services that are to be (un)threaded.
+#
+function rtirq_threaded ()
 {
 	ACTION=$1
 	NAME1=$2
 	NAME2=$3
-	PRI2=$4
-	IRQ=$5
-	# Check the services that are to be (un)threaded.
+	IRQ=$4
+
 	if [ -n "`echo :${RTIRQ_NON_THREADED}: | sed 's/ /:/g' | grep :${NAME1}:`" ]
 	then
-		PREPEND="Setting IRQ priorities: ${ACTION} [${NAME2}] irq=${IRQ}"
 		for THREADED in /proc/irq/${IRQ}/*/threaded
 		do
+			PREPEND="Setting IRQ non-threaded: ${ACTION} [${NAME2}] irq=${IRQ}"
 			if [ -f "${THREADED}" ]
 			then
 				case ${ACTION} in
@@ -96,30 +120,26 @@ function rtirq_exec_num ()
 			fi
 		done
 	fi
+}
+
+
+#
+# IRQ thread handler policy prioritizer, by IRQ number.
+#
+function rtirq_start_irq ()
+{
+	NAME1=$1
+	NAME2=$2
+	PRI2=$3
+	IRQ=$4
+
+	# Check for services that are to be non-threaded.
+	rtirq_threaded start "${NAME1}" "${NAME2}" ${IRQ}
 	# And now do the proper threading prioritization...
 	if [ -z "`echo ${RTIRQ_TRAIL} | grep :${NAME2}.${IRQ}:`" ]
 	then
-		# Special for kernel-rt >= 2.6.31, where one can
-		# prioritize shared IRQs by device driver (NAME2)...
-		PIDS=""
-		# First try for IRQs re. PCI sound devices ("snd")...
-		if [ "${NAME1}" == "snd" ]
-		then
-			PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.snd.${NAME2:0:4}" | awk '{print $1}'`
-			if [ -z "${PIDS}" ]
-			then
-				PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.snd.*" | awk '{print $1}'`
-			fi
-		fi
-		if [ -z "${PIDS}" ]
-		then
-			PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.${NAME2:0:8}" | awk '{print $1}'`
-		fi
-		# Backward compability for older kernel-rt < 2.6.31...
-		if [ -z "${PIDS}" ]
-		then
-			PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}" | awk '{print $1}'`
-		fi
+		# Find the IRQ tasklets...
+		PIDS=`rtirq_get_pids ${NAME1} ${NAME2} ${IRQ}`
 		# Whether a IRQ tasklet has been found.
 		if [ -n "${PIDS}" ]
 		then
@@ -128,61 +148,51 @@ function rtirq_exec_num ()
 		for PID in ${PIDS}
 		do
 			PREPEND="Setting IRQ priorities: ${ACTION} [${NAME2}] irq=${IRQ} pid=${PID}"
-			case ${ACTION} in
-			*start)
-				PREPEND="${PREPEND} prio=${PRI2}"
-				if ${RTIRQ_CHRT} -p -f ${PRI2} ${PID}
-				then
-					echo "${PREPEND}: OK."
-				else 
-					echo "${PREPEND}: FAILED."
-				fi
-				;;
-			stop)
-				if ${RTIRQ_CHRT} -p -f 50 ${PID}
-				then
-					echo "${PREPEND}: OK."
-				else 
-					echo "${PREPEND}: FAILED."
-				fi
-				;;
-			status)
-				echo "${PREPEND}: " && ${RTIRQ_CHRT} -p -v ${PID}
-				;;
-			*)
-				echo "${PREPEND}: ERROR."
-				;;
-			esac
+			# Save current state...
+			POL0=`${RTIRQ_CHRT} -p ${PID} | awk '/policy/ {print $NF}'`
+			PRI0=`${RTIRQ_CHRT} -p ${PID} | awk '/priority/ {print $NF}'`
+			echo ${NAME1} ${NAME2} ${IRQ} ${PRI0} ${POL0} >> ${RTIRQ_STATE}
+			# Start setting...
+			PREPEND="${PREPEND} prio=${PRI2}"
+			if ${RTIRQ_CHRT} -p -f ${PRI2} ${PID}
+			then
+				echo "${PREPEND}: OK."
+			else 
+				echo "${PREPEND}: FAILED."
+			fi
 			PRI2=$((${PRI2} - 1))
 			[ ${PRI2} -le ${PRI0_LOW} ] && PRI2=${PRI0_LOW}
 		done
 	fi
 }
 
+
 #
 # IRQ thread handler policy prioritizer, by service name.
 #
-function rtirq_exec_name ()
+function rtirq_start_name ()
 {
-	ACTION=$1
-	NAME1=$2
-	NAME2=$3
-	PRI1=$4
+	NAME1=$1
+	NAME2=$2
+	PRI1=$3
+
 	IRQS=`grep "${NAME2}" /proc/interrupts | awk -F: '{print $1}'`
 	for IRQ in ${IRQS}
 	do
-		rtirq_exec_num ${ACTION} "${NAME1}" "${NAME2}" ${PRI1} ${IRQ}
+		rtirq_start_irq "${NAME1}" "${NAME2}" ${PRI1} ${IRQ}
 		PRI1=$((${PRI1} - 1))
 		[ ${PRI1} -le ${PRI0_LOW} ] && PRI1=${PRI0_LOW}
 	done
 }
 
+
 #
 # Generic process top prioritizer
 #
-function rtirq_exec_high ()
+function rtirq_high ()
 {
 	ACTION=$1
+
 	case ${ACTION} in
 	*start)
 		PRI1=99
@@ -191,10 +201,11 @@ function rtirq_exec_high ()
 		PRI1=50
 		;;
 	esac
+
 	# Process all configured process names...
 	for NAME in ${RTIRQ_HIGH_LIST}
 	do
-		PREPEND="`basename $0`: ${ACTION} [${NAME}]"
+		PREPEND="Setting IRQ high-priorities: ${ACTION} [${NAME}]"
 		PIDS=`ps -eo pid,comm | grep "${NAME}" | awk '{print $1}'`
 		for PID in ${PIDS}
 		do
@@ -211,11 +222,10 @@ function rtirq_exec_high ()
 
 
 #
-# Main executive.
+#  Start/save state.
 #
-function rtirq_exec ()
+function rtirq_start ()
 {
-	ACTION=$1
 	# Check configured base priority.
 	PRI0=${RTIRQ_PRIO_HIGH:-90}
 	[ $((${PRI0})) -gt 95 ] && PRI0=95
@@ -229,7 +239,9 @@ function rtirq_exec ()
 	[ $((${PRI0_LOW})) -gt $((${PRI0})) ] && PRI0_LOW=${PRI0}
 	[ $((${PRI0_LOW})) -lt  51 ] && PRI0_LOW=51
 	# (Re)set all softirq-timer/s to highest priority.
-	rtirq_exec_high ${ACTION}
+	rtirq_high start
+	# Clear save/restore state.
+	rm -f ${RTIRQ_STATE}
 	# Process all configured service names...
 	for NAME in ${RTIRQ_NAME_LIST}
 	do
@@ -244,25 +256,90 @@ function rtirq_exec ()
 				grep ]: | sed 's/.*]: \(.*\) - .*/\1/' | \
 				while read NAME2
 				do
-					rtirq_exec_num ${ACTION} "${NAME}" "${NAME2}" ${PRI1} ${IRQ}
+					rtirq_start_irq "${NAME}" "${NAME2}" ${PRI1} ${IRQ}
 					PRI1=$((${PRI1} - 1))
 					[ ${PRI1} -le ${PRI0_LOW} ] && PRI1=${PRI0_LOW}
 				done
 			done
 			;;
 		usb)
-			rtirq_exec_name ${ACTION} "${NAME}" "ohci.hcd" ${PRI0}
-			rtirq_exec_name ${ACTION} "${NAME}" "uhci.hcd" ${PRI0}
-			rtirq_exec_name ${ACTION} "${NAME}" "ehci.hcd" ${PRI0}
-			rtirq_exec_name ${ACTION} "${NAME}" "xhci.hcd" ${PRI0}
+			rtirq_start_name "${NAME}" "ohci.hcd" ${PRI0}
+			rtirq_start_name "${NAME}" "uhci.hcd" ${PRI0}
+			rtirq_start_name "${NAME}" "ehci.hcd" ${PRI0}
+			rtirq_start_name "${NAME}" "xhci.hcd" ${PRI0}
 			;;
 		*)
-			rtirq_exec_name ${ACTION} "${NAME}" "${NAME}" ${PRI0}
+			rtirq_start_name "${NAME}" "${NAME}" ${PRI0}
 			;;
 		esac
 		[ ${PRI0} -gt ${DECR} ] && PRI0=$((${PRI0} - ${DECR}))
 		[ ${PRI0} -le ${PRI0_LOW} ] && PRI0=${PRI0_LOW}
 	done
+}
+
+
+#
+#  Stop/restore state.
+#
+function rtirq_stop ()
+{
+	[ -f ${RTIRQ_STATE} ] && \
+	while read NAME1 NAME2 IRQ PRI0 POLICY
+	do
+		PIDS=`rtirq_get_pids "${NAME1}" "${NAME2}" ${IRQ}`
+		for PID in ${PIDS}
+		do
+			PREPEND="Setting IRQ priorities: stop [${NAME2}] irq=${IRQ} pid=${PID}"
+			OPTS=""
+			case ${POLICY} in
+			*SCHED_FIFO*)
+				OPTS="${OPTS} -f"
+				;;
+			*SCHED_RR*)
+				OPTS="${OPTS} -r"
+				;;
+			*SCHED_OTHER*)
+				OPTS="${OPTS} -o"
+				;;
+			*SCHED_BATCH*)
+				OPTS="${OPTS} -b"
+				;;
+			*SCHED_IDLE*)
+				OPTS="${OPTS} -i"
+				;;
+			*SCHED_RESET_ON_FORK*)
+				OPTS="${OPTS} -R"
+				;;
+			esac
+			if ${RTIRQ_CHRT} ${OPTS} -p ${PRI0} ${PID}
+			then
+				echo "${PREPEND} pid=${PID} prio=${PRI0}: OK."
+			else 
+				echo "${PREPEND} pid=${PID} prio=${PRI0}: FAILED."
+			fi
+
+		done
+		rtirq_threaded stop "${NAME1}" "${NAME2}" ${IRQ}
+	done < ${RTIRQ_STATE}
+	# Clear save/restore state.
+	rm -f ${RTIRQ_STATE}
+	# Stop all softirq-timer/s from highest priority.
+	rtirq_high stop
+}
+
+
+# 
+# Reset policy of all IRQ threads out there. 
+#
+function rtirq_reset ()
+{
+	PIDS=`ps -eo pid,comm | egrep -i "irq.[0-9]+" | awk '{print $1}'`
+	for PID in ${PIDS}
+	do
+		${RTIRQ_CHRT} -p -f 50 ${PID}
+	done
+	# Reset all softirq-timer/s from highest priority.
+	rtirq_high reset
 }
 
 
@@ -275,14 +352,14 @@ start)
 	then
 		rtirq_reset
 	fi
-	rtirq_exec start
+	rtirq_start
 	;;
 stop)
+	rtirq_stop
 	if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
 	then
 		rtirq_reset
 	fi
-	rtirq_exec stop
 	;;
 reset)
 	rtirq_reset
