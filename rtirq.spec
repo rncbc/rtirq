@@ -11,13 +11,15 @@ Name:		%{name}
 Version:	%{version}
 Release:	%{release}
 License:	GPL-2.0+
-Packager:	rncbc
+Packager:	rncbc.org
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	/var/tmp/%{name}-%{version}-buildroot
 BuildArch:	noarch
 
-BuildRequires:	util-linux,systemd
+BuildRequires:	coreutils
+BuildRequires:	util-linux
+BuildRequires:	systemd
 
 %description
 Startup scripts for tunning the realtime scheduling policy and priority
@@ -65,8 +67,9 @@ fi
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
-* Tue Jan 12 2021 Rui Nuno Capela <rncbc@rncbc.org>
+* Wed Jan 13 2021 Rui Nuno Capela <rncbc@rncbc.org>
 - Getting rid of all the deprecated sysvinit stuff.
+- Version 20210113
 * Thu Nov 21 2019 Rui Nuno Capela <rncbc@rncbc.org>
 - Created debian packaging files.
 * Tue Jan 29 2019 Rui Nuno Capela <rncbc@rncbc.org>
