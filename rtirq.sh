@@ -23,7 +23,7 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 or later.
 #
-
+export LC_ALL=C
 
 # Won't work without those binaries.
 for DIR in /sbin /usr/sbin /bin /usr/bin /usr/local/bin; do
