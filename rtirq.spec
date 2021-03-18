@@ -69,6 +69,7 @@ fi
 %changelog
 * Tue Mar  9 2021 Rui Nuno Capela <rncbc@rncbc.org>
 - Rewrite attempt to save/restore state on start/stop resp.
+- Version 20210309
 * Wed Jan 13 2021 Rui Nuno Capela <rncbc@rncbc.org>
 - Getting rid of all the deprecated sysvinit stuff.
 - Version 20210113

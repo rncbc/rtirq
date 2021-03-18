@@ -61,13 +61,13 @@ RTIRQ_TRAIL=":"
 #
 function rtirq_get_pids ()
 {
-	NAME1=$1
-	NAME2=$2
-	IRQ=$3
+	local NAME1=$1
+	local NAME2=$2
+	local IRQ=$3
 
 	# Special for kernel-rt >= 2.6.31, where one can
 	# prioritize shared IRQs by device driver (NAME2)...
-	PIDS=""
+	local PIDS=""
 	# First try for IRQs re. PCI sound devices ("snd")...
 	if [ "${NAME1}" == "snd" ]
 	then
@@ -95,16 +95,16 @@ function rtirq_get_pids ()
 #
 function rtirq_threaded ()
 {
-	ACTION=$1
-	NAME1=$2
-	NAME2=$3
-	IRQ=$4
+	local ACTION=$1
+	local NAME1=$2
+	local NAME2=$3
+	local IRQ=$4
 
 	if [ -n "`echo :${RTIRQ_NON_THREADED}: | sed 's/ /:/g' | grep :${NAME1}:`" ]
 	then
 		for THREADED in /proc/irq/${IRQ}/*/threaded
 		do
-			PREPEND="Setting IRQ non-threaded: ${ACTION} [${NAME2}] irq=${IRQ}"
+			local PREPEND="Setting IRQ non-threaded: ${ACTION} [${NAME2}] irq=${IRQ}"
 			if [ -f "${THREADED}" ]
 			then
 				case ${ACTION} in
@@ -128,10 +128,10 @@ function rtirq_threaded ()
 #
 function rtirq_start_irq ()
 {
-	NAME1=$1
-	NAME2=$2
-	PRI2=$3
-	IRQ=$4
+	local NAME1=$1
+	local NAME2=$2
+	local PRI2=$3
+	local IRQ=$4
 
 	# Check for services that are to be non-threaded.
 	rtirq_threaded start "${NAME1}" "${NAME2}" ${IRQ}
@@ -147,13 +147,13 @@ function rtirq_start_irq ()
 		fi
 		for PID in ${PIDS}
 		do
-			PREPEND="Setting IRQ priorities: ${ACTION} [${NAME2}] irq=${IRQ} pid=${PID}"
+			PREPEND="Setting IRQ priorities: start [${NAME2}] irq=${IRQ} pid=${PID}"
 			# Save current state...
-			POL0=`${RTIRQ_CHRT} -p ${PID} | awk '/policy/ {print $NF}'`
-			PRI0=`${RTIRQ_CHRT} -p ${PID} | awk '/priority/ {print $NF}'`
+			local POL0=`${RTIRQ_CHRT} -p ${PID} | awk '/policy/ {print $NF}'`
+			local PRI0=`${RTIRQ_CHRT} -p ${PID} | awk '/priority/ {print $NF}'`
 			echo ${NAME1} ${NAME2} ${IRQ} ${PRI0} ${POL0} >> ${RTIRQ_STATE}
 			# Start setting...
-			PREPEND="${PREPEND} prio=${PRI2}"
+			local PREPEND="${PREPEND} prio=${PRI2}"
 			if ${RTIRQ_CHRT} -p -f ${PRI2} ${PID}
 			then
 				echo "${PREPEND}: OK."
@@ -172,11 +172,11 @@ function rtirq_start_irq ()
 #
 function rtirq_start_name ()
 {
-	NAME1=$1
-	NAME2=$2
-	PRI1=$3
+	local NAME1=$1
+	local NAME2=$2
+	local PRI1=$3
 
-	IRQS=`grep "${NAME2}" /proc/interrupts | awk -F: '{print $1}'`
+	local IRQS=`grep "${NAME2}" /proc/interrupts | awk -F: '{print $1}'`
 	for IRQ in ${IRQS}
 	do
 		rtirq_start_irq "${NAME1}" "${NAME2}" ${PRI1} ${IRQ}
@@ -191,8 +191,9 @@ function rtirq_start_name ()
 #
 function rtirq_high ()
 {
-	ACTION=$1
+	local ACTION=$1
 
+	local PRI1=0
 	case ${ACTION} in
 	*start)
 		PRI1=99
@@ -205,8 +206,8 @@ function rtirq_high ()
 	# Process all configured process names...
 	for NAME in ${RTIRQ_HIGH_LIST}
 	do
-		PREPEND="Setting IRQ high-priorities: ${ACTION} [${NAME}]"
-		PIDS=`ps -eo pid,comm | grep "${NAME}" | awk '{print $1}'`
+		local PREPEND="Setting IRQ high-priorities: ${ACTION} [${NAME}]"
+		local PIDS=`ps -eo pid,comm | grep "${NAME}" | awk '{print $1}'`
 		for PID in ${PIDS}
 		do
 			if ${RTIRQ_CHRT} -p -f ${PRI1} ${PID}
@@ -227,11 +228,11 @@ function rtirq_high ()
 function rtirq_start ()
 {
 	# Check configured base priority.
-	PRI0=${RTIRQ_PRIO_HIGH:-90}
+	local PRI0=${RTIRQ_PRIO_HIGH:-90}
 	[ $((${PRI0})) -gt 95 ] && PRI0=95
 	[ $((${PRI0})) -lt 55 ] && PRI0=55
 	# Check configured priority decrease step.
-	DECR=${RTIRQ_PRIO_DECR:-5}
+	local DECR=${RTIRQ_PRIO_DECR:-5}
 	[ $((${DECR})) -gt 10 ] && DECR=10
 	[ $((${DECR})) -lt  1 ] && DECR=1
 	# Check configured lower limit of priority.
@@ -247,7 +248,7 @@ function rtirq_start ()
 	do
 		case ${NAME} in
 		snd)
-			PRI1=${PRI0}
+			local PRI1=${PRI0}
 			grep irq /proc/asound/cards | \
 			sed 's/\(.*\) at.* irq \(.*\)/\2 \1/;s/with .*//' | \
 			while read IRQ NAME1
@@ -286,11 +287,11 @@ function rtirq_stop ()
 	[ -f ${RTIRQ_STATE} ] && \
 	while read NAME1 NAME2 IRQ PRI0 POLICY
 	do
-		PIDS=`rtirq_get_pids "${NAME1}" "${NAME2}" ${IRQ}`
+		local PIDS=`rtirq_get_pids "${NAME1}" "${NAME2}" ${IRQ}`
 		for PID in ${PIDS}
 		do
-			PREPEND="Setting IRQ priorities: stop [${NAME2}] irq=${IRQ} pid=${PID}"
-			OPTS=""
+			local PREPEND="Setting IRQ priorities: stop [${NAME2}] irq=${IRQ} pid=${PID}"
+			local OPTS=""
 			case ${POLICY} in
 			*SCHED_FIFO*)
 				OPTS="${OPTS} -f"
