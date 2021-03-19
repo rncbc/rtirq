@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20210309
-%define release 41
+%define version 20210319
+%define release 42
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -67,6 +67,9 @@ fi
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Fri Mar 19 2021 Rui Nuno Capela <rncbc@rncbc.org>
+- Force LC_ALL=C and fix local variables on  main script.
+- Version 20210319
 * Tue Mar  9 2021 Rui Nuno Capela <rncbc@rncbc.org>
 - Rewrite attempt to save/restore state on start/stop resp.
 - Version 20210309
