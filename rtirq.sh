@@ -23,6 +23,19 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 or later.
 #
+### BEGIN INIT INFO
+# Provides:          rtirq
+# Required-Start:    $syslog $local_fs $remote_fs
+# Should-Start: $time alsa alsasound hotplug
+# Required-Stop:     $syslog $local_fs $remote_fs
+# Should-Stop: $time alsa alsasound hotplug
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Realtime IRQ thread tunning.
+# Description:       Change the realtime scheduling policy
+#	and priority of relevant system driver IRQ handlers.
+### END INIT INFO
+#
 export LC_ALL=C
 
 # Won't work without those binaries.
