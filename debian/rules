@@ -10,8 +10,8 @@
 override_dh_auto_configure:
 override_dh_auto_build:
 override_dh_auto_install:
-	install -vDm 755 rtirq.sh      debian/tmp/usr/sbin/rtirq
-	install -vDm 644 rtirq.conf -t debian/tmp/etc/
+	install -vDm 755 rtirq.sh      debian/tmp/rtirq
+	install -vDm 644 rtirq.conf -t debian/tmp/
 
 override_dh_installinit:
 	cp -v rtirq.service        debian/
