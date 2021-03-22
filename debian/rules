@@ -1,16 +1,30 @@
 #!/usr/bin/make -f
 %:
-	dh $@
+	dh $@ --with systemd
 
-override_dh_auto_clean:
-	rm -f debian/rtirq.default debian/rtirq.init
-	dh_auto_clean
+#override_dh_auto_clean:
+#	rm -f debian/rtirq.rtirq.service
+#	rm -f debian/rtirq.rtirq-resume.service
+#	dh_auto_clean
 
 override_dh_auto_configure:
 override_dh_auto_build:
 override_dh_auto_install:
-override_dh_installinit:
-	cp rtirq.conf debian/rtirq.default
-	cp rtirq.sh   debian/rtirq.init
-	dh_installinit --name=rtirq -- defaults 99
+	install -vDm 755 rtirq.sh      debian/tmp/usr/sbin/rtirq
+	install -vDm 644 rtirq.conf -t debian/tmp/etc/
 
+override_dh_installinit:
+	cp -v rtirq.service        debian/
+	cp -v rtirq-resume.service debian/
+	dh_systemd_enable --name=rtirq        rtirq.service
+	dh_systemd_enable --name=rtirq-resume rtirq-resume.service
+	dh_installinit                        --no-start
+	dh_installinit    --name=rtirq        --no-start --noscripts
+	dh_installinit    --name=rtirq-resume --no-start --noscripts
+	dh_systemd_start  rtirq.service       --no-restart-on-upgrade
+
+#override_dh_installsystemd:
+#	cp rtirq.service debian/rtirq.rtirq.service
+#	cp rtirq-resume.service debian/rtirq.rtirq-resume.service
+#	dh_installsystemd --name=rtirq
+#	dh_installsystemd --name=rtirq-resume
