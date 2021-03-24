@@ -6,9 +6,10 @@ Build-Depends: debhelper (>= 9), dh-systemd (>= 1.5)
 Standards-Version: 3.9.7
 Homepage: https://www.rncbc.org/archive/#rtirq
 
-Package: rtirq-init
+Package: rtirq
 Architecture: all
 Depends: ${misc:Depends}
+Replaces: rtirq-init (<= ${source:Version})
 Description: Realtime IRQ thread system tunning
   Startup scripts for tunning the realtime scheduling policy and priority
   of relevant IRQ service threads, featured for a PREEMPT_RT / threadirqs

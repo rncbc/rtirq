@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 %:
-	dh $@ --with systemd
+	dh $@ --with=systemd
 
 #override_dh_auto_clean:
 #	rm -f debian/rtirq.rtirq.service

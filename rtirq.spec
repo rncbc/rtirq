@@ -59,6 +59,7 @@ fi
 
 %files
 %defattr(-,root,root)
+%doc README.md LICENSE
 %{_sbindir}/rtirq
 %config(noreplace) %{_sysconfdir}/rtirq.conf
 %dir %{_prefix}/lib/systemd
