@@ -1,6 +1,6 @@
 %define name    rtirq
-%define version 20210319
-%define release 42
+%define version 20210329
+%define release 43
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -68,8 +68,11 @@ fi
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Mon Mar 29 2021 Rui Nuno Capela <rncbc@rncbc.org>
+- First attempt to deploy as a pure systemd unit service on debian/ubuntu/etc.
+- Version 20210329
 * Fri Mar 19 2021 Rui Nuno Capela <rncbc@rncbc.org>
-- Force LC_ALL=C and fix local variables on  main script.
+- Force LC_ALL=C and fix local variables on main script.
 - Version 20210319
 * Tue Mar  9 2021 Rui Nuno Capela <rncbc@rncbc.org>
 - Rewrite attempt to save/restore state on start/stop resp.
