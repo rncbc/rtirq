@@ -1,6 +1,6 @@
 %define name    rtirq
 %define version 20210329
-%define release 43
+%define release 43.1
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -68,6 +68,8 @@ fi
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Sat Apr 10 2021 Rui Nuno Capela <rncbc@rncbc.org>
+- Version 20210329-43.1
 * Mon Mar 29 2021 Rui Nuno Capela <rncbc@rncbc.org>
 - First attempt to deploy as a pure systemd unit service on debian/ubuntu/etc.
 - Version 20210329
