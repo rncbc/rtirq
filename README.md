@@ -1,7 +1,7 @@
 # rtirq
 rtirq - Startup script for realtime-preempt enabled kernels
 
-Your package manager may make this package availabe as `rtirq-init`.
+Your package manager may make this package available as `rtirq-init`.
 
 This script allows to make use of the threaded IRQs as used by real-time kernels or kernels >= 2.6.39 with the threadirqs kernel option enabled.
 
