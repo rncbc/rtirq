@@ -17,7 +17,7 @@ GRUB_CMDLINE_LINUX="threadirqs"
 ```
 Then run `update-grub` with super-user privileges.
 
-You can adapt the priorities given to specific interrupts to the needs of your setup depending if you are using a soundcard on the USB or firewire bus for instance. To do sp you can edit the rtirq config file, which typically will be installed in either of the directories:
+You can adapt the priorities given to specific interrupts to the needs of your setup depending if you are using a soundcard on the USB or FireWire bus for instance. To do so you can edit the rtirq config file, which typically will be installed in either of the directories:
 
 ```
 /etc/rtirq.conf
