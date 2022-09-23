@@ -386,7 +386,7 @@ status)
 	echo
 	#rtirq_exec status
 	ps -eo pid,class,rtprio,ni,pri,pcpu,stat,comm --sort -rtprio \
-		| grep -E '(^[ |\t]*PID|IRQ|softirq|sirq|irq\/)' \
+		| grep -E '(^[ |\t]*PID|IRQ|softirq|sirq|irq/)' \
 		| awk 'BEGIN {
 			while (getline IRQLine < "/proc/interrupts") {
 				split(IRQLine, IRQSplit, ":[ |\t|0-9]+");

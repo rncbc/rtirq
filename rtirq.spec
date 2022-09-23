@@ -1,6 +1,6 @@
 %define name    rtirq
 %define version 20220923
-%define release 44.1
+%define release 44.2
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -69,8 +69,9 @@ fi
 
 %changelog
 * Fri Sep 23 2022 Rui Nuno Capela <rncbc@rncbc.org>
+- Fixed grep warning stray \ before /.
 - Replace obsolescent egrep for grep -E.
-- Version 20220923-44.1
+- Version 20220923-44.2
 * Sat Apr 10 2021 Rui Nuno Capela <rncbc@rncbc.org>
 - Version 20210329-43.1
 * Mon Mar 29 2021 Rui Nuno Capela <rncbc@rncbc.org>

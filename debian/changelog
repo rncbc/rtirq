@@ -1,6 +1,7 @@
-rtirq (20220923-44.1) unstable; urgency=low
+rtirq (20220923-44.2) unstable; urgency=low
 
-  *  Replace obsolescent egrep for grep -E.
+  * Fixed grep warning stray \ before /.
+  * Replace obsolescent egrep for grep -E.
 
  -- Rui Nuno Capela <rncbc@rncbc.org>  Fri, 23 Sep 2022 12:00:00 +0100
 
