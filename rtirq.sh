@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2004-2021, rncbc aka Rui Nuno Capela.
+# Copyright (C) 2004-2022, rncbc aka Rui Nuno Capela.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License
@@ -84,20 +84,20 @@ function rtirq_get_pids ()
 	# First try for IRQs re. PCI sound devices ("snd")...
 	if [ "${NAME1}" == "snd" ]
 	then
-		PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.snd.${NAME2:0:4}" | awk '{print $1}'`
+		PIDS=`ps -eo pid,comm | grep -Ei "irq.${IRQ}.snd.${NAME2:0:4}" | awk '{print $1}'`
 		if [ -z "${PIDS}" ]
 		then
-			PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.snd.*" | awk '{print $1}'`
+			PIDS=`ps -eo pid,comm | grep -Ei "irq.${IRQ}.snd.*" | awk '{print $1}'`
 		fi
 	fi
 	if [ -z "${PIDS}" ]
 	then
-		PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}.${NAME2:0:8}" | awk '{print $1}'`
+		PIDS=`ps -eo pid,comm | grep -Ei "irq.${IRQ}.${NAME2:0:8}" | awk '{print $1}'`
 	fi
 	# Backward compability for older kernel-rt < 2.6.31...
 	if [ -z "${PIDS}" ]
 	then
-		PIDS=`ps -eo pid,comm | egrep -i "irq.${IRQ}" | awk '{print $1}'`
+		PIDS=`ps -eo pid,comm | grep -Ei "irq.${IRQ}" | awk '{print $1}'`
 	fi
 	echo ${PIDS}
 }
@@ -347,7 +347,7 @@ function rtirq_stop ()
 #
 function rtirq_reset ()
 {
-	PIDS=`ps -eo pid,comm | egrep -i "irq.[0-9]+" | awk '{print $1}'`
+	PIDS=`ps -eo pid,comm | grep -Ei "irq.[0-9]+" | awk '{print $1}'`
 	for PID in ${PIDS}
 	do
 		${RTIRQ_CHRT} -p -f 50 ${PID}
@@ -386,7 +386,7 @@ status)
 	echo
 	#rtirq_exec status
 	ps -eo pid,class,rtprio,ni,pri,pcpu,stat,comm --sort -rtprio \
-		| egrep '(^[ |\t]*PID|IRQ|softirq|sirq|irq\/)' \
+		| grep -E '(^[ |\t]*PID|IRQ|softirq|sirq|irq\/)' \
 		| awk 'BEGIN {
 			while (getline IRQLine < "/proc/interrupts") {
 				split(IRQLine, IRQSplit, ":[ |\t|0-9]+");
