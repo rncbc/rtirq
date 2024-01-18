@@ -356,13 +356,27 @@ function rtirq_reset ()
 	rtirq_high reset
 }
 
+#
+# Warn about prerequisites to script usefulness
+#
+function rtirq_check_sanity ()
+{
+	if [[ "$(uname -v)" == *"PREEMPT_RT"* ]]; then
+		return
+	fi
+	if [[ "$(cat /proc/cmdline)" == *"threadirqs"* ]]; then
+		return
+	fi
+	>&2 echo "WARNING: A realtime kernel or the threadirqs kernel parameter are required."
+}
 
 #
 # Main procedure line.
 #
 case $1 in
 start)
-	if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
+	rtirq_check_sanity
+        if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
 	then
 		rtirq_reset
 	fi
