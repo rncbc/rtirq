@@ -1,3 +1,9 @@
+rtirq (20240119-45.1) unstable; urgency=low
+
+  * Small robustness increase (by capocasa)
+
+ -- Rui Nuno Capela <rncbc@rncbc.org>  Fri, 19 Jan 2024 15:00:00 +0000
+
 rtirq (20220923-44.2) unstable; urgency=low
 
   * Fixed grep warning stray \ before /.

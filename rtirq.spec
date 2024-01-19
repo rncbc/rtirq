@@ -1,6 +1,23 @@
+#
+# spec file for package rtirq
+#
+# Copyright (C) 2004-2024, rncbc aka Rui Nuno Capela. All rights reserved.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+#
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
+
 %define name    rtirq
-%define version 20220923
-%define release 44.2
+%define version 20240119
+%define release 45.1
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -68,6 +85,9 @@ fi
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Fri Jan 19 2024 Rui Nuno Capela <rncbc@rncbc.org>
+- Small robustness increase (by capocasa)
+- Version 20240119-45.1
 * Fri Sep 23 2022 Rui Nuno Capela <rncbc@rncbc.org>
 - Fixed grep warning stray \ before /.
 - Replace obsolescent egrep for grep -E.
