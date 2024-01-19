@@ -84,20 +84,20 @@ function rtirq_get_pids ()
 	# First try for IRQs re. PCI sound devices ("snd")...
 	if [ "${NAME1}" == "snd" ]
 	then
-		PIDS=`ps -eo pid,comm | grep -Ei "irq.${IRQ}.snd.${NAME2:0:4}" | awk '{print $1}'`
+		PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]snd.${NAME2:0:4}" | awk '{print $1}'`
 		if [ -z "${PIDS}" ]
 		then
-			PIDS=`ps -eo pid,comm | grep -Ei "irq.${IRQ}.snd.*" | awk '{print $1}'`
+			PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]snd.*" | awk '{print $1}'`
 		fi
 	fi
 	if [ -z "${PIDS}" ]
 	then
-		PIDS=`ps -eo pid,comm | grep -Ei "irq.${IRQ}.${NAME2:0:8}" | awk '{print $1}'`
+		PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]${NAME2:0:8}" | awk '{print $1}'`
 	fi
 	# Backward compability for older kernel-rt < 2.6.31...
 	if [ -z "${PIDS}" ]
 	then
-		PIDS=`ps -eo pid,comm | grep -Ei "irq.${IRQ}" | awk '{print $1}'`
+		PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9] | awk '{print $1}'`
 	fi
 	echo ${PIDS}
 }
@@ -156,7 +156,7 @@ function rtirq_start_irq ()
 		# Whether a IRQ tasklet has been found.
 		if [ -n "${PIDS}" ]
 		then
-			RTIRQ_TRAIL=":${NAME2}.${IRQ}${RTIRQ_TRAIL}"
+			RTIRQ_TRAIL=":${NAME2}[^0-9]${IRQ}${RTIRQ_TRAIL}"
 		fi
 		for PID in ${PIDS}
 		do
@@ -356,13 +356,27 @@ function rtirq_reset ()
 	rtirq_high reset
 }
 
+#
+# Warn about prerequisites to script usefulness
+#
+function rtirq_check_sanity ()
+{
+	if [[ "$(uname -v)" == *"PREEMPT_RT"* ]]; then
+		return
+	fi
+	if [[ "$(cat /proc/cmdline)" == *"threadirqs"* ]]; then
+		return
+	fi
+	>&2 echo "WARNING: A realtime kernel or the threadirqs kernel parameter are required."
+}
 
 #
 # Main procedure line.
 #
 case $1 in
 start)
-	if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
+	rtirq_check_sanity
+        if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
 	then
 		rtirq_reset
 	fi
