@@ -97,7 +97,7 @@ function rtirq_get_pids ()
 	# Backward compability for older kernel-rt < 2.6.31...
 	if [ -z "${PIDS}" ]
 	then
-		PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9] | awk '{print $1}'`
+		PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]" | awk '{print $1}'`
 	fi
 	echo ${PIDS}
 }
