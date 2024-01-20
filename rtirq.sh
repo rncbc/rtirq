@@ -373,10 +373,11 @@ function rtirq_check_sanity ()
 #
 # Main procedure line.
 #
+rtirq_check_sanity
+
 case $1 in
 start)
-	rtirq_check_sanity
-        if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
+	if [ "${RTIRQ_RESET_ALL}" = "yes" -o "${RTIRQ_RESET_ALL}" = "1" ]
 	then
 		rtirq_reset
 	fi

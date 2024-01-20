@@ -1,3 +1,9 @@
+rtirq (20240120-46.1) unstable; urgency=low
+
+  * Small typo fixed (by pallaswept)
+
+  -- Rui Nuno Capela <rncbc@rncbc.org>  Sat, 20 Jan 2024 22:00:00 +0000
+
 rtirq (20240119-45.1) unstable; urgency=low
 
   * Small robustness increase (by capocasa)

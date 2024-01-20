@@ -16,8 +16,8 @@
 #
 
 %define name    rtirq
-%define version 20240119
-%define release 45.1
+%define version 20240120
+%define release 46.1
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -85,7 +85,10 @@ fi
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
-* Fri Jan 19 2024 Rui Nuno Capela <rncbc@rncbc.org>
+* Sat Jan 20 2024 Rui Nuno Capela <rncbc@rncbc.org>
+- Small typo fixed (by pallaswept)
+- Version 20240120-46.1
+* Sat Jan 20 2024 Rui Nuno Capela <rncbc@rncbc.org>
 - Small robustness increase (by capocasa)
 - Version 20240119-45.1
 * Fri Sep 23 2022 Rui Nuno Capela <rncbc@rncbc.org>
