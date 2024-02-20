@@ -16,8 +16,8 @@
 #
 
 %define name    rtirq
-%define version 20240120
-%define release 46.1
+%define version 20240220
+%define release 47.1
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -85,6 +85,9 @@ fi
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Tue Feb 20 2024 Rui Nuno Capela <rncbc@rncbc.org>
+- Added "snd-usb" keyword. (EXPERIMENTAL)
+- Version 20240220-47.1
 * Sat Jan 20 2024 Rui Nuno Capela <rncbc@rncbc.org>
 - Small typo fixed (by pallaswept)
 - Version 20240120-46.1

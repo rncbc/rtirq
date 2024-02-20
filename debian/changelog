@@ -1,3 +1,9 @@
+rtirq (20240220-47.1) unstable; urgency=low
+
+  * Added "snd-usb" keyword. (EXPERIMENTAL)
+
+  -- Rui Nuno Capela <rncbc@rncbc.org>  Tue, 20 Feb 2024 12:00:00 +0000
+
 rtirq (20240120-46.1) unstable; urgency=low
 
   * Small typo fixed (by pallaswept)

@@ -45,7 +45,7 @@ done
 
 # Check for missing binaries (stale symlinks should not happen)
 [ -n "${RTIRQ_CHRT}" -a -x ${RTIRQ_CHRT} ] || {
-	echo "`basename $0`: chrt: not installed."  
+	echo "$(basename $0): chrt: not installed."  
 	[ "$1" = "stop" ] && exit 0 || exit 5
 }
 
@@ -53,7 +53,7 @@ done
 RTIRQ_CONFIG=/etc/rtirq.conf
 [ -r ${RTIRQ_CONFIG} ] || RTIRQ_CONFIG=/etc/default/rtirq
 [ -r ${RTIRQ_CONFIG} ] || {
-	echo "`basename $0`: ${RTIRQ_CONFIG}: not found."
+	echo "$(basename $0): ${RTIRQ_CONFIG}: not found."
 	[ "${RTIRQ_ACTION}" = "stop" ] && exit 0 || exit 6
 }
 
@@ -84,20 +84,16 @@ function rtirq_get_pids ()
 	# First try for IRQs re. PCI sound devices ("snd")...
 	if [ "${NAME1}" == "snd" ]
 	then
-		PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]snd.${NAME2:0:4}" | awk '{print $1}'`
-		if [ -z "${PIDS}" ]
-		then
-			PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]snd.*" | awk '{print $1}'`
-		fi
+		PIDS=$(ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]snd.*" | awk '{print $1}')
 	fi
 	if [ -z "${PIDS}" ]
 	then
-		PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]${NAME2:0:8}" | awk '{print $1}'`
+		PIDS=$(ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]${NAME2:0:8}" | awk '{print $1}')
 	fi
 	# Backward compability for older kernel-rt < 2.6.31...
 	if [ -z "${PIDS}" ]
 	then
-		PIDS=`ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]" | awk '{print $1}'`
+		PIDS=$(ps -eo pid,comm | grep -Ei "irq[^0-9]${IRQ}[^0-9]" | awk '{print $1}')
 	fi
 	echo ${PIDS}
 }
@@ -113,11 +109,11 @@ function rtirq_threaded ()
 	local NAME2=$3
 	local IRQ=$4
 
-	if [ -n "`echo :${RTIRQ_NON_THREADED}: | sed 's/ /:/g' | grep :${NAME1}:`" ]
+	if [ -n "$(echo ':${RTIRQ_NON_THREADED}:' | sed 's/ /:/g' | grep ':${NAME1}:')" ]
 	then
 		for THREADED in /proc/irq/${IRQ}/*/threaded
 		do
-			local PREPEND="Setting IRQ non-threaded: ${ACTION} [${NAME2}] irq=${IRQ}"
+			local PREPEND="Setting IRQ non-threaded: ${ACTION} [${NAME2//_/ }] irq=${IRQ}"
 			if [ -f "${THREADED}" ]
 			then
 				case ${ACTION} in
@@ -149,21 +145,21 @@ function rtirq_start_irq ()
 	# Check for services that are to be non-threaded.
 	rtirq_threaded start "${NAME1}" "${NAME2}" ${IRQ}
 	# And now do the proper threading prioritization...
-	if [ -z "`echo ${RTIRQ_TRAIL} | grep :${NAME2}.${IRQ}:`" ]
+	if [ -z "$(echo ${RTIRQ_TRAIL} | grep ':${NAME2}.${IRQ}:')" ]
 	then
 		# Find the IRQ tasklets...
-		PIDS=`rtirq_get_pids ${NAME1} ${NAME2} ${IRQ}`
+		PIDS=$(rtirq_get_pids "${NAME1}" "${NAME2}" ${IRQ})
 		# Whether a IRQ tasklet has been found.
 		if [ -n "${PIDS}" ]
 		then
-			RTIRQ_TRAIL=":${NAME2}[^0-9]${IRQ}${RTIRQ_TRAIL}"
+			RTIRQ_TRAIL=":${NAME2}.${IRQ}${RTIRQ_TRAIL}"
 		fi
 		for PID in ${PIDS}
 		do
-			PREPEND="Setting IRQ priorities: start [${NAME2}] irq=${IRQ} pid=${PID}"
+			PREPEND="Setting IRQ priorities: start [${NAME2//_/ }] irq=${IRQ} pid=${PID}"
 			# Save current state...
-			local POL0=`${RTIRQ_CHRT} -p ${PID} | awk '/policy/ {print $NF}'`
-			local PRI0=`${RTIRQ_CHRT} -p ${PID} | awk '/priority/ {print $NF}'`
+			local POL0=$(${RTIRQ_CHRT} -p ${PID} | awk '/policy/ {print $NF}')
+			local PRI0=$(${RTIRQ_CHRT} -p ${PID} | awk '/priority/ {print $NF}')
 			echo ${NAME1} ${NAME2} ${IRQ} ${PRI0} ${POL0} >> ${RTIRQ_STATE}
 			# Start setting...
 			local PREPEND="${PREPEND} prio=${PRI2}"
@@ -189,7 +185,7 @@ function rtirq_start_name ()
 	local NAME2=$2
 	local PRI1=$3
 
-	local IRQS=`grep "${NAME2}" /proc/interrupts | awk -F: '{print $1}'`
+	local IRQS=$(grep "${NAME2}" /proc/interrupts | awk -F: '{print $1}')
 	for IRQ in ${IRQS}
 	do
 		rtirq_start_irq "${NAME1}" "${NAME2}" ${PRI1} ${IRQ}
@@ -220,7 +216,7 @@ function rtirq_high ()
 	for NAME in ${RTIRQ_HIGH_LIST}
 	do
 		local PREPEND="Setting IRQ high-priorities: ${ACTION} [${NAME}]"
-		local PIDS=`ps -eo pid,comm | grep "${NAME}" | awk '{print $1}'`
+		local PIDS=$(ps -eo pid,comm | grep "${NAME}" | awk '{print $1}')
 		for PID in ${PIDS}
 		do
 			if ${RTIRQ_CHRT} -p -f ${PRI1} ${PID}
@@ -259,9 +255,24 @@ function rtirq_start ()
 	# Process all configured service names...
 	for NAME in ${RTIRQ_NAME_LIST}
 	do
+		local PRI1=${PRI0}
 		case ${NAME} in
+		snd-usb)
+			grep usb /proc/asound/cards | \
+			sed 's/[ ]*\(.*\) at usb-\(.*\)\-.*/\1|\2/' | \
+			while read SND_USB_LINE
+			do
+				NAME2=$(echo $SND_USB_LINE | cut -d\| -f1)
+				DEV=$(echo $SND_USB_LINE | cut -d\| -f2)
+				IRQ=$(cat /sys/devices/pci0000:00/${DEV}/irq 2>/dev/null)
+				if [ -n "$IRQ" ]; then
+					rtirq_start_irq "${NAME}" "${NAME2// /_}" ${PRI1} ${IRQ}
+					PRI1=$((${PRI1} - 1))
+					[ ${PRI1} -le ${PRI0_LOW} ] && PRI1=${PRI0_LOW}
+				fi
+			done
+			;;
 		snd)
-			local PRI1=${PRI0}
 			grep irq /proc/asound/cards | \
 			sed 's/\(.*\) at.* irq \(.*\)/\2 \1/;s/with .*//' | \
 			while read IRQ NAME1
@@ -300,10 +311,10 @@ function rtirq_stop ()
 	[ -f ${RTIRQ_STATE} ] && \
 	while read NAME1 NAME2 IRQ PRI0 POLICY
 	do
-		local PIDS=`rtirq_get_pids "${NAME1}" "${NAME2}" ${IRQ}`
+		local PIDS=$(rtirq_get_pids "${NAME1}" "${NAME2}" ${IRQ})
 		for PID in ${PIDS}
 		do
-			local PREPEND="Setting IRQ priorities: stop [${NAME2}] irq=${IRQ} pid=${PID}"
+			local PREPEND="Setting IRQ priorities: stop [${NAME2//_/ }] irq=${IRQ} pid=${PID}"
 			local OPTS=""
 			case ${POLICY} in
 			*SCHED_FIFO*)
@@ -347,7 +358,7 @@ function rtirq_stop ()
 #
 function rtirq_reset ()
 {
-	PIDS=`ps -eo pid,comm | grep -Ei "irq.[0-9]+" | awk '{print $1}'`
+	PIDS=$(ps -eo pid,comm | grep -Ei "irq.[0-9]+" | awk '{print $1}')
 	for PID in ${PIDS}
 	do
 		${RTIRQ_CHRT} -p -f 50 ${PID}
