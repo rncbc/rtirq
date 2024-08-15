@@ -338,9 +338,9 @@ function rtirq_stop ()
 			esac
 			if ${RTIRQ_CHRT} ${OPTS} -p ${PRI0} ${PID}
 			then
-				echo "${PREPEND} pid=${PID} prio=${PRI0}: OK."
+				echo "${PREPEND} prio=${PRI0}: OK."
 			else 
-				echo "${PREPEND} pid=${PID} prio=${PRI0}: FAILED."
+				echo "${PREPEND} prio=${PRI0}: FAILED."
 			fi
 
 		done
