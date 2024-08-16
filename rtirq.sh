@@ -412,21 +412,22 @@ status)
 	echo
 	#rtirq_exec status
 	ps -eo pid,class,rtprio,ni,pri,pcpu,stat,comm --sort -rtprio \
-		| grep -E '(^[ |\t]*PID|IRQ|softirq|sirq|irq/)' \
-		| awk 'BEGIN {
-			while (getline IRQLine < "/proc/interrupts") {
-				split(IRQLine, IRQSplit, ":[ |\t|0-9]+");
-				if (match(IRQSplit[1], "^[ |\t]*[0-9]+$")) {
-					gsub("[^ |\t]+(PIC|MSI)[^ |\t]*[ |\t]+" \
-						"|\\[[^\\]]+\\][^ |\t]*[ |\t]+",
-						"", IRQSplit[2]);
-					IRQTable[IRQSplit[1] + 0] = IRQSplit[2];
-				}
-			}
-		} { if ($9 == "")
-			{ print $0"\t"IRQTable[substr($8,5)]; }
-			else
-			{ print $0"\t"IRQTable[$9]; } }'
+		| grep -E '(^[ |\t]*PID|irq/)'
+	#	| grep -E '(^[ |\t]*PID|IRQ|softirq|sirq|irq/)' \
+	#	| awk 'BEGIN {
+	#		while (getline IRQLine < "/proc/interrupts") {
+	#			split(IRQLine, IRQSplit, ":[ |\t|0-9]+");
+	#			if (match(IRQSplit[1], "^[ |\t]*[0-9]+$")) {
+	#				gsub("[^ |\t]+(PIC|MSI)[^ |\t]*[ |\t]+" \
+	#					"|\\[[^\\]]+\\][^ |\t]*[ |\t]+",
+	#					"", IRQSplit[2]);
+	#				IRQTable[IRQSplit[1] + 0] = IRQSplit[2];
+	#			}
+	#		}
+	#	} { if ($9 == "")
+	#		{ print $0"\tA("$8"):"IRQTable[substr($8,5)]; }
+	#		else
+	#		{ print $0"\tB("$9"):"IRQTable[$9]; } }'
 	echo
 	;;
 *)
