@@ -16,8 +16,8 @@
 #
 
 %define name    rtirq
-%define version 20240220
-%define release 47.1
+%define version 20240905
+%define release 48.1
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -85,6 +85,10 @@ fi
 %{_prefix}/lib/systemd/system/rtirq-resume.service
 
 %changelog
+* Thu Sep  5 2024 Rui Nuno Capela <rncbc@rncbc.org>
+- Dropped duplicated PID printing from stop messages.
+- Vastly simplified `rtirq status` output.
+- Version 20240905-48.1
 * Tue Feb 20 2024 Rui Nuno Capela <rncbc@rncbc.org>
 - Added "snd-usb" keyword. (EXPERIMENTAL)
 - Version 20240220-47.1
